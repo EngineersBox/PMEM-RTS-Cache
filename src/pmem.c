@@ -72,14 +72,18 @@ void read_hello_string(char *path) {
  * functions to perform read and write persistently to memory.
  *****************************/
 int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <-w/-r> <filename>\n", argv[0]);
+        exit(1);
+    }
     char *path = argv[2];
 
     // Create the string to save to persistent memory
     char buf[MAX_BUF_LEN] = "Hello Persistent Memory!!!";
 
-    if (strcmp (argv[1], "-w") == 0) {
-        write_hello_string (buf, path);
-    } else if (strcmp (argv[1], "-r") == 0) {
+    if (strcmp(argv[1], "-w") == 0) {
+        write_hello_string(buf, path);
+    } else if (strcmp(argv[1], "-r") == 0) {
         read_hello_string(path);
     } else {
         fprintf(stderr, "Usage: %s <-w/-r> <filename>\n", argv[0]);
