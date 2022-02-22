@@ -5,9 +5,26 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+#ifndef _WIN32
+#include <unistd.h>
+#else
+#include <io.h>
+#endif
+#include <libpmem2.h>
+
 #include "entry.h"
 
 #define MAX_CACHE_ENTRIES 10
+
+typedef struct {
+    int fd;
+    struct pmem2_config *cfg;
+    struct pmem2_map *map;
+    struct pmem2_source *src;
+} pm_config;
 
 typedef struct {
     size_t allocatedSize;
