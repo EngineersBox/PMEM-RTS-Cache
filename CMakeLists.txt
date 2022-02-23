@@ -1,8 +1,18 @@
 cmake_minimum_required(VERSION 3.21)
 project(PMEM_mmap_IO C)
 
+set(CC gcc-9.3)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
 set(CMAKE_VERBOSE_MAKEFILE ON)
+
+# ---- PKG CONFIG ---- #
+
+find_package(PkgConfig)
+
+# Create var aliases for libs
+pkg_check_modules(libpmem REQUIRED IMPORTED_TARGET libpmem)
+pkg_check_modules(libpmem2 REQUIRED IMPORTED_TARGET libpmem2)
+pkg_check_modules(libpmemobj REQUIRED IMPORTED_TARGET libpmemobj)
 
 # ---- SOURCES ---- #
 
@@ -23,14 +33,9 @@ target_include_directories(PMEM_mmap_IO PRIVATE ${includeDirs})
 
 # ---- LIBS ---- #
 
-# PMDK
+# Link libs via aliases
+target_link_libraries(PMEM_mmap_IO PUBLIC PkgConfig::libpmem)
+target_link_libraries(PMEM_mmap_IO PUBLIC PkgConfig::libpmemobj)
+
+# PMDK headers (for OSX dev, this is compiled on linux)
 target_include_directories(PMEM_mmap_IO PRIVATE "${PMDK_LOCATION}/include")
-target_link_libraries(
-        PMEM_mmap_IO
-        PRIVATE
-        "${PMDK_LOCATION}/lib/libpmem.lib"
-        "${PMDK_LOCATION}/lib/libpmemblk.lib"
-        "${PMDK_LOCATION}/lib/libpmemlog.lib"
-        "${PMDK_LOCATION}/lib/libpmemobj.lib"
-        "${PMDK_LOCATION}/lib/libpmempool.lib"
-)

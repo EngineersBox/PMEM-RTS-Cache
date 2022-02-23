@@ -4,13 +4,11 @@
 
 #include "layout.h"
 
-int
-main(int argc, char *argv[])
-{
-//    if (argc != 2) {
-//        printf("usage: %s file-name\n", argv[0]);
-//        return 1;
-//    }
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("usage: %s file-name\n", argv[0]);
+        return 1;
+    }
 
     PMEMobjpool *pop = pmemobj_create("E:/PMEM-RTS-Cache/testfile", LAYOUT_NAME,
                                       PMEMOBJ_MIN_POOL, 0666);
