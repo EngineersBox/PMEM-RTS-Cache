@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    PMEMobjpool *pop = pmemobj_create("E:/PMEM-RTS-Cache/testfile", LAYOUT_NAME,
+    PMEMobjpool *pop = pmemobj_create(argv[1], LAYOUT_NAME,
                                       PMEMOBJ_MIN_POOL, 0666);
 
     if (pop == NULL) {
