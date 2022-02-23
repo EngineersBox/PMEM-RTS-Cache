@@ -1,24 +1,15 @@
 # PMEM RTS Cache
 A configurable persistent memory cache designed for real-time search engines
 
-## CMake Configuration
+## Building
 
-In order to build, this project depends on PMDK. You'll need to provide the PMDK lib base location
-so that CMake can link the lib properly. The reason for this is that PMDK doesn't have CMake support
-out of the box, so it has to be manually linked. Provide the following for CMake:
+This project is designed to be used with `pkg-config` to find the relevant pmdk installation. Make sure you have
+that installed and configured to find pmdk before building this project.
 
-```shell
--DPMDK_LOCATION="/path/to/lib"
-```
-
-## Issues
-
-There is an issue with PMDK with gcc, building produces the following error:
+Once you have pmdk and `pkg-config` installed and configured run the following:
 
 ```shell
-In file included from /path/to/pmdk/include/libpmem.h:20,
-                 from ./src/pmem.c:5:
-/path/to/pmdk/include/pmemcompat.h:25:13: error: conflicting types for 'mode_t'; have 'int'
+cmake .
+make
+./PMEM_mmap_IO <args>
 ```
-
-At the moment, there is no work around for gcc, so you'll need to use mvsc or clang
