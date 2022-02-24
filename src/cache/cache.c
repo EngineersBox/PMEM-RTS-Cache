@@ -1,5 +1,5 @@
 #include "cache.h"
-#include <libpmem2.h>
+#include <libpmemobj.h>
 
 int8_t allocateEntries(cache* ptr, size_t count, char* pmem_file) {
     if (ptr->cfg != NULL) {

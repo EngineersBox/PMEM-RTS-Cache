@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  pmem_rts_cache_dev:
+    build: .
+    volumes:
+      - ".:/pmem_rts_cache"
+    environment:
+      TZ: "Australia/Canberra"
+    stdin_open: true
+    tty: true

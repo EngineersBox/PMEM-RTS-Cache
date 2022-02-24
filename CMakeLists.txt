@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(PMEM_mmap_IO C)
+project(rts_cache C)
 
 set(CC gcc-9.3)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
@@ -38,20 +38,20 @@ endforeach()
 list(REMOVE_DUPLICATES includeDirs)
 
 # Mark executable
-add_executable(PMEM_mmap_IO ${sourceFiles})
-target_include_directories(PMEM_mmap_IO PRIVATE ${includeDirs})
+add_executable(rts_cache ${sourceFiles})
+target_include_directories(rts_cache PRIVATE ${includeDirs})
 
 # ---- LIBS ---- #
 
 if(LINUX)
 
     # Link libs via aliases
-    target_link_libraries(PMEM_mmap_IO PUBLIC PkgConfig::libpmem)
-    target_link_libraries(PMEM_mmap_IO PUBLIC PkgConfig::libpmemobj)
+    target_link_libraries(rts_cache PUBLIC PkgConfig::libpmem)
+    target_link_libraries(rts_cache PUBLIC PkgConfig::libpmemobj)
 
-elseif(APPLE)
+else()
 
     # PMDK headers (for OSX dev, this is compiled on linux)
-    target_include_directories(PMEM_mmap_IO PRIVATE "${PMDK_LOCATION}/include")
+    target_include_directories(rts_cache PRIVATE "./include")
 
 endif()
