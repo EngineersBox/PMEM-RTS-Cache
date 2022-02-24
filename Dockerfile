@@ -1,13 +1,13 @@
 FROM ubuntu:20.04
 
-# Update apt repo entries
-RUN apt-get -y update
-
 # Install and configure debconf
-RUN apt-get install -y debconf-utils
+RUN \
+    apt-get -y update && \
+    apt-get install -y debconf-utils
 
 # Install dependencies
 RUN \
+    apt-get -y update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y pkg-config && \
     apt-get install -y autoconf \
       libndctl-dev \
@@ -42,7 +42,9 @@ RUN \
     apt-get install -y kitware-archive-keyring
 
 # Install latest cmake
-RUN apt-get install -y cmake
+RUN \
+    apt-get -y update && \
+    apt-get install -y cmake
 
 # Install PMDK
 RUN \
