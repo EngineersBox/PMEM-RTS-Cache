@@ -15,6 +15,6 @@ long long getNanos(void) {
 typedef struct {
     long timestamp;
     int value;
-} cache_entry;
+} CacheEntry;
 
 #endif //PMEM_MMAP_IO_ENTRY_H

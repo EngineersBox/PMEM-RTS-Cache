@@ -22,19 +22,19 @@
 typedef struct {
     PMEMobjpool *pool;
     PMEMoid root;
-} config;
+} Config;
 
 typedef struct {
-    config* cfg;
+    Config* cfg;
     size_t allocatedSize;
-    size_t count;
-    cache_entry* entries;
-} cache;
+    size_t lastIdx;
+    CacheEntry* entries;
+} Cache;
 
-cache_entry* getEntry(cache* ptr, uint32_t index);
-uint32_t putEntry(cache* ptr, cache_entry entry);
+int8_t getEntry(const Cache* ptr, uint32_t index, const CacheEntry* entry);
+uint32_t putEntry(Cache* ptr, const CacheEntry* entry);
 
-int8_t allocateEntries(cache* ptr, size_t count, char* pmem_file);
-int8_t freeEntries(cache* ptr);
+int8_t allocateEntries(Cache *ptr, size_t count, const char* pmem_file);
+int8_t freeEntries(const Cache* ptr);
 
 #endif //PMEM_MMAP_IO_CACHE_H

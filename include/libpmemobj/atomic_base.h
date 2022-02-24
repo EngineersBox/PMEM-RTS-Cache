@@ -18,7 +18,7 @@ extern "C" {
  * Non-transactional atomic allocations
  *
  * Those functions can be used outside transactions. The allocations are always
- * aligned to the cache-line boundary.
+ * aligned to the Cache-line boundary.
  */
 
 #define POBJ_XALLOC_VALID_FLAGS	(POBJ_XALLOC_ZERO |\

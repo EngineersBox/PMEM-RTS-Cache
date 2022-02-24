@@ -114,20 +114,20 @@ pmemobj_direct_inline(PMEMoid oid)
 	if (oid.off == 0 || oid.pool_uuid_lo == 0)
 		return NULL;
 
-	struct _pobj_pcache *cache = &_pobj_cached_pool;
-	if (_pobj_cache_invalidate != cache->invalidate ||
-			cache->uuid_lo != oid.pool_uuid_lo) {
-		cache->invalidate = _pobj_cache_invalidate;
+	struct _pobj_pcache *Cache = &_pobj_cached_pool;
+	if (_pobj_cache_invalidate != Cache->invalidate ||
+			Cache->uuid_lo != oid.pool_uuid_lo) {
+		Cache->invalidate = _pobj_cache_invalidate;
 
-		if (!(cache->pop = pmemobj_pool_by_oid(oid))) {
-			cache->uuid_lo = 0;
+		if (!(Cache->pop = pmemobj_pool_by_oid(oid))) {
+			Cache->uuid_lo = 0;
 			return NULL;
 		}
 
-		cache->uuid_lo = oid.pool_uuid_lo;
+		Cache->uuid_lo = oid.pool_uuid_lo;
 	}
 
-	return (void *)((uintptr_t)cache->pop + oid.off);
+	return (void *)((uintptr_t)Cache->pop + oid.off);
 }
 
 #endif /* _WIN32 */

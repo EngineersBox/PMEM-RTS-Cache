@@ -1,5 +1,5 @@
 # PMEM RTS Cache
-A configurable persistent memory cache designed for real-time search engines
+A configurable persistent memory Cache designed for real-time search engines
 
 ## Building
 
@@ -11,7 +11,7 @@ Once you have pmdk and `pkg-config` installed and configured run the following:
 ```shell
 cmake .
 make
-./PMEM_mmap_IO <args>
+./rts_cache <args>
 ```
 
 ## Docker Compose

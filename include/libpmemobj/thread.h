@@ -18,7 +18,7 @@ extern "C" {
 /*
  * Locking.
  */
-#define _POBJ_CL_SIZE 64 /* cache line size */
+#define _POBJ_CL_SIZE 64 /* Cache line size */
 
 typedef union {
 	long long align;
