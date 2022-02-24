@@ -8,22 +8,25 @@ RUN apt-get install -y debconf-utils
 
 # Install dependencies
 RUN \
-    apt-get install -y autoconf && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y pkg-config && \
-    apt-get install -y libndctl-dev && \
-    apt-get install -y libdaxctl-dev && \
-    apt-get install -y pandoc && \
-    apt-get install -y git && \
-    apt-get install -y make && \
-    apt-get install -y gpg && \
-    apt-get install -y wget && \
-    apt-get install -y build-essential && \
-    apt-get install -y software-properties-common && \
-    apt-get install -y curl && \
-    apt-get install -y htop && \
-    apt-get install -y man && \
-    apt-get install -y unzip && \
-    apt-get install -y vim
+    apt-get install -y autoconf \
+      libndctl-dev \
+      ndctl \
+      libdaxctl-dev \
+      daxctl \
+      cxl-cli \
+      pandoc \
+      git \
+      make \
+      gpg \
+      wget \
+      build-essential \
+      software-properties-common \
+      curl \
+      htop \
+      man \
+      unzip \
+      vim
 
 # Get GPG signing key
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
