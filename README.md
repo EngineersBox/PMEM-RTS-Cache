@@ -37,7 +37,7 @@ Next, boot the virtual machine with the server image and complete the Ubuntu ser
 Here `2048MB` of memory is supplied, feel free to change that but generally use a value at or above `640MB`.
 Also, note that `nvdimm=on` enables us to interface with PMEM
 ```shell
-qemu-system-x86_64 -hda ubuntu.img -boot d -cdrom ubuntu-20.04.4-desktop-amd64.iso -m 2048M  -machine nvdimm=on
+qemu-system-x86_64 -hda ubuntu.img -boot d -cdrom ubuntu-20.04.4-live-server-amd64.iso -m 2048M  -machine nvdimm=on
 ```
 
 Once you are finished with the server setup, go ahead and boot the guest system.
