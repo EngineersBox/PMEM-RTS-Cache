@@ -1,11 +1,13 @@
 /cmake-build-debug
 /CMakeFiles
 /out
+/.idea
 
+**/.DS_Store
 cmake_install.cmake
 CMakeCache.txt
 Makefile
 rts_cache
-
-**/.DS_Store
-/.idea
+ubuntu-20.04.4-desktop-amd64.iso
+ubuntu-20.04.4-live-server-amd64.iso
+ubuntu.img

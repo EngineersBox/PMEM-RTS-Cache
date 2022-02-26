@@ -31,7 +31,7 @@ typedef struct {
     CacheEntry* entries;
 } Cache;
 
-int8_t getEntry(const Cache* ptr, uint32_t index, const CacheEntry* entry);
+int8_t getEntry(const Cache* ptr, uint32_t index, CacheEntry* entry);
 uint32_t putEntry(Cache* ptr, const CacheEntry* entry);
 
 int8_t allocateEntries(Cache *ptr, size_t count, const char* pmem_file);

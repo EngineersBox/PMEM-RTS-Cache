@@ -48,7 +48,7 @@ int8_t freeEntries(const Cache* ptr) {
     return 0;
 }
 
-int8_t getEntry(const Cache* ptr, uint32_t index, const CacheEntry* entry) {
+int8_t getEntry(const Cache* ptr, uint32_t index, CacheEntry* entry) {
     if (ptr == NULL || ptr->entries == NULL || ptr->cfg == NULL) {
         return -1;
     }
