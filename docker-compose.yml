@@ -9,3 +9,4 @@ services:
       TZ: "Australia/Canberra"
     stdin_open: true
     tty: true
+    privileged: true

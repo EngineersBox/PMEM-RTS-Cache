@@ -22,6 +22,7 @@ int main(int argc, char *argv[]) {
     struct my_root *rootp = pmemobj_direct(root);
 
     char buf[MAX_BUF_LEN] = {0};
+    printf("Input text to store:");
     if (scanf("%9s", buf) == EOF) {
         fprintf(stderr, "EOF\n");
         return 1;
@@ -32,7 +33,20 @@ int main(int argc, char *argv[]) {
         memcpy(rootp->buf, buf, strlen(buf));
     } TX_END
 
+    printf("\n====\n\n");
     pmemobj_close(pop);
 
+    pop = pmemobj_open(argv[1], LAYOUT_NAME);
+    if (pop == NULL) {
+        perror("pmemobj_open");
+        return 1;
+    }
+
+    root = pmemobj_root(pop, sizeof(struct my_root));
+    rootp = pmemobj_direct(root);
+
+    printf("Text from PMEM: %s\n", rootp->buf);
+
+    pmemobj_close(pop);
     return 0;
 }

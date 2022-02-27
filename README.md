@@ -39,16 +39,14 @@ port `22` in the guest for direct ssh access from a remote system.
 
 ```shell
 qemu-system-x86_64 -drive file=ubuntu.raw,format=raw,index=0,media=disk \
+  -boot d \
   -m 4G,slots=4,maxmem=32G \
   -smp 4 \
   -machine pc,accel=kvm,nvdimm=on \
   -enable-kvm \
-  -vnc :0 \
-  -net nic \
-  -net user,hostfwd=tcp::2222-:22 \
-  -object memory-backend-file,id=mem1,share,mem-path=/virtual-machines/qemu/f27nvdimm0,size=4G \
+  -object memory-backend-file,id=mem1,share,mem-path=/vms/qemu/f27nvdimm0,size=4G \
   -device nvdimm,memdev=mem1,id=nv1,label-size=2M \
-  -object memory-backend-file,id=mem2,share,mem-path=/virtual-machines/qemu/f27nvdimm1,size=4G \
+  -object memory-backend-file,id=mem2,share,mem-path=/vms/qemu/f27nvdimm1,size=4G \
   -device nvdimm,memdev=mem2,id=nv2,label-size=2M
 ```
 
@@ -56,5 +54,13 @@ The first time you do an install, you'll need to provide the serve image to do t
 It can be provided like so:
 
 ```shell
---drive media=cdrom,file=ubuntu-20.04.4-live-server-amd64.iso,readonly=on
+-drive media=cdrom,file=ubuntu-20.04.4-live-server-amd64.iso,readonly=on
+```
+
+You can also alternatively use regular RAM for the memory backend with the following, this is particularly
+useful if you don't have access to a KVN enabled Linux distro installed. You'll want to replace both options in
+the original command appropriately with naming applied.
+
+```shell
+---object memory-backend-ram,id=mem1,share,size=4G
 ```

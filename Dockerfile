@@ -14,7 +14,6 @@ RUN \
       ndctl \
       libdaxctl-dev \
       daxctl \
-      cxl-cli \
       pandoc \
       git \
       make \
@@ -26,7 +25,12 @@ RUN \
       htop \
       man \
       unzip \
-      vim
+      vim \
+      qemu \
+      qemu-kvm
+
+# Create pmem backing store directories
+RUN mkdir -p /vms/qemu
 
 # Get GPG signing key
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
