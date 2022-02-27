@@ -58,8 +58,9 @@ It can be provided like so:
 ```
 
 You can also alternatively use regular RAM for the memory backend with the following, this is particularly
-useful if you don't have access to a KVN enabled Linux distro installed. You'll want to replace both options in
-the original command appropriately with naming applied.
+useful if you don't have access to a KVM enabled Linux distro installed. You'll want to replace both options in
+the original command appropriately with naming applied. Note that this will mean that the contents of PMEM will
+only persist for that session, once you close the linux instance, it will be erased.
 
 ```shell
 ---object memory-backend-ram,id=mem1,share,size=4G
