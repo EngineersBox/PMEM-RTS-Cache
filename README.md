@@ -56,5 +56,5 @@ The first time you do an install, you'll need to provide the serve image to do t
 It can be provided like so:
 
 ```shell
---drive media=cdrom,file=ubuntu-20.04.4-live-server-amd64.iso,readonly
+--drive media=cdrom,file=ubuntu-20.04.4-live-server-amd64.iso,readonly=on
 ```
