@@ -64,3 +64,17 @@ the original command appropriately with naming applied.
 ```shell
 ---object memory-backend-ram,id=mem1,share,size=4G
 ```
+
+For example:
+
+```shell
+qemu-system-x86_64 -boot d \
+  -drive file=ubuntu.raw,format=raw,index=0,media=disk \
+  -m 4G,slots=4,maxmem=32G \
+  -smp 4 \
+  -machine pc,nvdimm=on \
+  -object memory-backend-ram,id=mem1,share=on,size=4G \
+  -device nvdimm,memdev=mem1,id=nv1,label-size=2M \
+  -object memory-backend-ram,id=mem2,share=on,size=4G \
+  -device nvdimm,memdev=mem2,id=nv2,label-size=2M
+```
