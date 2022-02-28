@@ -32,8 +32,8 @@ int main(int argc, char *argv[]) {
     }
     printf("Cache size: %d", cache.lastIdx);
 
-    CacheEntry storedEntry = {};
-    err = getEntry(&cache, cache.lastIdx, &entry);
+    CacheEntry storedEntry;
+    err = getEntry(&cache, 0, &storedEntry);
     if (err != 0) {
         printf("Could not get entry\n");
         return 1;

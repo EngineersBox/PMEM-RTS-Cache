@@ -76,7 +76,7 @@ uint32_t putEntry(Cache* ptr, const CacheEntry* entry) {
             sizeof(CacheEntry) * ptr->allocatedSize
         );
         memcpy(
-            &(ptr->entries[ptr->lastIdx++]),
+            ptr->entries + ptr->lastIdx++,
             entry,
             sizeof(CacheEntry)
         );
