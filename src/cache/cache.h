@@ -25,7 +25,7 @@ typedef struct {
 } Config;
 
 typedef struct {
-    Config* cfg;
+    Config cfg;
     size_t allocatedSize;
     size_t lastIdx;
     CacheEntry* entries;
