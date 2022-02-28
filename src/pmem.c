@@ -8,13 +8,13 @@ long long getNanos(void) {
     return ts.tv_sec * 1000000000L + ts.tv_nsec;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 2) {
         printf("usage: %s <file-name>\n", argv[0]);
         return 1;
     }
 
-    Cache cache;
+    Cache cache = {};
     int8_t err = allocateEntries(&cache, 3, argv[1]);
     if (err != 0) {
         printf("Could not allocate entries\n");
