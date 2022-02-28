@@ -33,8 +33,8 @@ int main(int argc, char* argv[]) {
     }
     printf("Cache size: %d\n", cache.lastIdx);
 
-    CacheEntry storedEntry;
-    err = getEntry(&cache, 0, &storedEntry);
+    const CacheEntry storedEntry = {};
+    err = getEntry(&cache, cache.lastIdx, &storedEntry);
     if (err != 0) {
         printf("Could not get entry\n");
         return 1;
