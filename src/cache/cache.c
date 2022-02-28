@@ -2,7 +2,7 @@
 
 int8_t allocateEntries(Cache *ptr, size_t count, const char* pmem_file) {
     if (ptr->cfg.pool != NULL) {
-        perror("Pool has already been initialised");
+        printf("Pool has already been initialised\n");
         return -1;
     }
     ptr->cfg.pool = pmemobj_create(
@@ -12,7 +12,7 @@ int8_t allocateEntries(Cache *ptr, size_t count, const char* pmem_file) {
         0666
     );
     if (ptr->cfg.pool == NULL) {
-        perror("Could not invoke pmemobj_create");
+        printf("Could not invoke pmemobj_create\n");
         return -1;
     }
     if (count > MAX_CACHE_ENTRIES) {
@@ -35,7 +35,7 @@ int8_t freeEntries(const Cache* ptr) {
         return 0;
     }
     if (ptr->cfg.pool == NULL) {
-        perror("Pool was null after being freed");
+        printf("Pool was null after being freed\n");
         return -1;
     }
     pmemobj_close(ptr->cfg.pool);
@@ -47,11 +47,12 @@ int8_t freeEntries(const Cache* ptr) {
 
 int8_t getEntry(const Cache* ptr, uint32_t index, CacheEntry* entry) {
     if (ptr == NULL || ptr->entries == NULL || ptr->cfg.pool == NULL) {
-        perror("Cache was not in state to allow entry access");
+        printf("Cache was not in state to allow entry access\n");
         return -1;
     }
     if (index >= ptr->lastIdx || index >= ptr->allocatedSize) {
-        perror("Index out of range or allocated size");
+        printf("Index: %d, LastIndex: %d, AllocatedSize: %d\n", index, ptr->lastIdx, ptr->allocatedSize);
+        printf("Index out of range or allocated size\n");
         return -1;
     }
     entry = &ptr->entries[index];
@@ -60,12 +61,12 @@ int8_t getEntry(const Cache* ptr, uint32_t index, CacheEntry* entry) {
 
 uint32_t putEntry(Cache* ptr, const CacheEntry* entry) {
     if (ptr == NULL || ptr->entries == NULL || ptr->cfg.pool == NULL) {
-        perror("Cache was not in state to allow entry insertion");
+        printf("Cache was not in state to allow entry insertion\n");
         return -1;
     }
     if (ptr->lastIdx >= ptr->allocatedSize - 1) {
-        printf("Index: %d, AllocatedSize: %d", ptr->lastIdx, ptr->allocatedSize);
-        perror("Cache is full");
+        printf("LastIndex: %d, AllocatedSize: %d\n", ptr->lastIdx, ptr->allocatedSize);
+        printf("Cache is full\n");
         return -1;
     }
     TX_BEGIN(ptr->cfg.pool) {
@@ -75,7 +76,7 @@ uint32_t putEntry(Cache* ptr, const CacheEntry* entry) {
             sizeof(CacheEntry) * ptr->allocatedSize
         );
         memcpy(
-            ptr->entries + ptr->lastIdx++,
+            &(ptr->entries[ptr->lastIdx++]),
             entry,
             sizeof(CacheEntry)
         );
