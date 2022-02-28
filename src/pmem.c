@@ -2,6 +2,12 @@
 
 #include "cache/cache.h"
 
+long long getNanos(void) {
+    struct timespec ts;
+    timespec_get(&ts, TIME_UTC);
+    return ts.tv_sec * 1000000000L + ts.tv_nsec;
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         printf("usage: %s <file-name>\n", argv[0]);
@@ -13,7 +19,7 @@ int main(int argc, char *argv[]) {
 
     CacheEntry entry = {
         .timestamp = getNanos(),
-        .value = 0
+        .value = 483525
     };
     int8_t idx = putEntry(&cache, &entry);
 
