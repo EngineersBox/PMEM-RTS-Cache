@@ -15,16 +15,28 @@ int main(int argc, char *argv[]) {
     }
 
     Cache cache;
-    allocateEntries(&cache, 3, argv[1]);
+    int8_t err = allocateEntries(&cache, 3, argv[1]);
+    if (err != 0) {
+        printf("Could not allocate entries");
+        return 1;
+    }
 
     CacheEntry entry = {
         .timestamp = getNanos(),
         .value = 483525
     };
-    int8_t idx = putEntry(&cache, &entry);
+    err = putEntry(&cache, &entry);
+    if (err != 0) {
+        printf("Could not allocate entries");
+        return 1;
+    }
 
     CacheEntry storedEntry = {};
-    getEntry(&cache, idx, &entry);
+    err = getEntry(&cache, cache.lastIdx, &entry);
+    if (err != 0) {
+        printf("Could not allocate entries");
+        return 1;
+    }
     printf("Timestamp: %ldl Value: %d", storedEntry.timestamp, storedEntry.value);
 
     freeEntries(&cache);
