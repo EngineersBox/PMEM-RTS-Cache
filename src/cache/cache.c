@@ -50,7 +50,7 @@ int8_t getEntry(const Cache* ptr, uint32_t index, CacheEntry* entry) {
         printf("Cache was not in state to allow entry access\n");
         return -1;
     }
-    if (index >= ptr->lastIdx || index >= ptr->allocatedSize) {
+    if (index > ptr->lastIdx || index >= ptr->allocatedSize) {
         printf("Index: %d, LastIndex: %d, AllocatedSize: %d\n", index, ptr->lastIdx, ptr->allocatedSize);
         printf("Index out of range or allocated size\n");
         return -1;
