@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     Cache cache;
     int8_t err = allocateEntries(&cache, 3, argv[1]);
     if (err != 0) {
-        printf("Could not allocate entries");
+        perror("Could not allocate entries\n");
         return 1;
     }
 
@@ -27,14 +27,14 @@ int main(int argc, char *argv[]) {
     };
     err = putEntry(&cache, &entry);
     if (err != 0) {
-        printf("Could not allocate entries");
+        perror("Could insert entry\n");
         return 1;
     }
 
     CacheEntry storedEntry = {};
     err = getEntry(&cache, cache.lastIdx, &entry);
     if (err != 0) {
-        printf("Could not allocate entries");
+        perror("Could get entry\n");
         return 1;
     }
     printf("Timestamp: %ldl Value: %d", storedEntry.timestamp, storedEntry.value);
