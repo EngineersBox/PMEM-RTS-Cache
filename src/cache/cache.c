@@ -9,8 +9,8 @@ int8_t allocateEntries(Cache *ptr, size_t count, const char* pmem_file) {
         return -1;
     }
     ptr->cfg->pool = pmemobj_create(
-        (const wchar_t*) pmem_file,
-        (const wchar_t*) "CACHE_POOL",
+        pmem_file,
+        "CACHE_POOL",
         PMEMOBJ_MIN_POOL,
         0666
     );

@@ -1,8 +1,6 @@
 #include <stdio.h>
-#include <string.h>
-#include <libpmemobj.h>
 
-#include "layout.h"
+#include "cache/cache.h"
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -10,43 +8,20 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    PMEMobjpool *pop = pmemobj_create(argv[1], LAYOUT_NAME,
-                                      PMEMOBJ_MIN_POOL, 0666);
+    Cache cache;
+    allocateEntries(&cache, 3, argv[1]);
 
-    if (pop == NULL) {
-        perror("pmemobj_create");
-        return 1;
-    }
+    CacheEntry entry = {
+        .timestamp = getNanos(),
+        .value = 0
+    };
+    int8_t idx = putEntry(&cache, &entry);
 
-    PMEMoid root = pmemobj_root(pop, sizeof(struct my_root));
-    struct my_root *rootp = pmemobj_direct(root);
+    CacheEntry storedEntry = {};
+    getEntry(&cache, idx, &entry);
+    printf("Timestamp: %ldl Value: %d", storedEntry.timestamp, storedEntry.value);
 
-    char buf[MAX_BUF_LEN] = {0};
-    printf("Input text to store:");
-    if (scanf("%9s", buf) == EOF) {
-        fprintf(stderr, "EOF\n");
-        return 1;
-    }
+    freeEntries(&cache);
 
-    TX_BEGIN(pop) {
-        pmemobj_tx_add_range(root, 0, sizeof(struct my_root));
-        memcpy(rootp->buf, buf, strlen(buf));
-    } TX_END
-
-    printf("\n====\n\n");
-    pmemobj_close(pop);
-
-    pop = pmemobj_open(argv[1], LAYOUT_NAME);
-    if (pop == NULL) {
-        perror("pmemobj_open");
-        return 1;
-    }
-
-    root = pmemobj_root(pop, sizeof(struct my_root));
-    rootp = pmemobj_direct(root);
-
-    printf("Text from PMEM: %s\n", rootp->buf);
-
-    pmemobj_close(pop);
     return 0;
 }
