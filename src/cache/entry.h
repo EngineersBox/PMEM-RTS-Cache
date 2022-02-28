@@ -12,8 +12,8 @@ POBJ_LAYOUT_ROOT(entries_store, struct Entries);
 POBJ_LAYOUT_END(entries_store);
 
 typedef struct {
-    long timestamp;
-    int value;
+    int32_t value;
+    int64_t timestamp;
 } CacheEntry;
 
 struct Entries {

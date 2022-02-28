@@ -3,10 +3,10 @@
 
 #include "cache/cache.h"
 
-long long getNanos(void) {
-    struct timespec ts;
-    timespec_get(&ts, TIME_UTC);
-    return ts.tv_sec * 1000000000L + ts.tv_nsec;
+int64_t getMillis(void) {
+    struct timespec now;
+    timespec_get(&now, TIME_UTC);
+    return (now.tv_sec * 1000) + ((int64_t) now.tv_nsec) / 1000000;
 }
 
 int main(int argc, char* argv[]) {
@@ -23,8 +23,8 @@ int main(int argc, char* argv[]) {
     }
 
     CacheEntry entry = {
-        .timestamp = getNanos(),
-        .value = 483525
+        .value = 42,
+        .timestamp = getMillis(),
     };
     err = putEntry(&cache, &entry);
     if (err != 0) {
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
         printf("Could not get entry\n");
         return 1;
     }
-    printf("Timestamp: %ldl Value: %d\n", storedEntry.timestamp, storedEntry.value);
+    printf("Timestamp: %lld Value: %d\n", storedEntry.timestamp, storedEntry.value);
 
     freeEntries(&cache);
 

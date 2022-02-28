@@ -34,18 +34,16 @@ int8_t freeEntries(const Cache* ptr) {
     return 0;
 }
 
-int8_t getEntry(const Cache* ptr, uint32_t index, CacheEntry* entry) {
+int8_t getEntry(const Cache* ptr, uint32_t index, const CacheEntry* entry) {
     if (ptr == NULL || ptr->persisted.pool == NULL) {
         printf("Cache was not in state to allow entry access\n");
         return -1;
     }
     if (index > ptr->lastIdx || index >= ptr->allocatedSize) {
-        printf("Index: %d, LastIndex: %d, AllocatedSize: %d\n", index, ptr->lastIdx, ptr->allocatedSize);
         printf("Index out of range or allocated size\n");
         return -1;
     }
-    printf("Entry value: %d", D_RW(ptr->persisted.root)->entries[index].value);
-    entry = &(D_RW(ptr->persisted.root)->entries[index]);
+    entry = D_RO(ptr->persisted.root)->entries[index];
     return 0;
 }
 
@@ -55,12 +53,11 @@ uint32_t putEntry(Cache* ptr, const CacheEntry* entry) {
         return -1;
     }
     if (ptr->lastIdx >= ptr->allocatedSize - 1) {
-        printf("LastIndex: %d, AllocatedSize: %d\n", ptr->lastIdx, ptr->allocatedSize);
         printf("Cache is full\n");
         return -1;
     }
     TX_BEGIN(ptr->persisted.pool) {
-        TX_MEMCPY(D_RW(ptr->persisted.root)->entries + ptr->lastIdx++, entry, sizeof(CacheEntry));
+        D_RW(ptr->persisted.root)->entries[ptr->lastIdx++] = *entry;
     } TX_END
     return 0;
 }
