@@ -4,11 +4,20 @@
 #define PMEM_MMAP_IO_ENTRY_H
 
 #include <stdint.h>
-#include <time.h>
+
+#define MAX_CACHE_ENTRIES 10
+
+POBJ_LAYOUT_BEGIN(entries_store);
+POBJ_LAYOUT_ROOT(entries_store, struct Entries);
+POBJ_LAYOUT_END(entries_store);
 
 typedef struct {
     long timestamp;
     int value;
 } CacheEntry;
+
+struct Entries {
+    CacheEntry entries[MAX_CACHE_ENTRIES];
+};
 
 #endif //PMEM_MMAP_IO_ENTRY_H

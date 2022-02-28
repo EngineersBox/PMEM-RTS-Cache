@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 #include "cache/cache.h"
 
@@ -15,7 +16,7 @@ int main(int argc, char* argv[]) {
     }
 
     Cache cache = {};
-    int8_t err = allocateEntries(&cache, 3, argv[1]);
+    int8_t err = allocateEntries(&cache, argv[1]);
     if (err != 0) {
         printf("Could not allocate entries\n");
         return 1;
@@ -30,7 +31,7 @@ int main(int argc, char* argv[]) {
         printf("Could not insert entry\n");
         return 1;
     }
-    printf("Cache size: %d", cache.lastIdx);
+    printf("Cache size: %d\n", cache.lastIdx);
 
     CacheEntry storedEntry;
     err = getEntry(&cache, 0, &storedEntry);
@@ -38,7 +39,7 @@ int main(int argc, char* argv[]) {
         printf("Could not get entry\n");
         return 1;
     }
-    printf("Timestamp: %ldl Value: %d", storedEntry.timestamp, storedEntry.value);
+    printf("Timestamp: %ldl Value: %d\n", storedEntry.timestamp, storedEntry.value);
 
     freeEntries(&cache);
 

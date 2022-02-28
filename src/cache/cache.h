@@ -17,24 +17,21 @@
 
 #include "entry.h"
 
-#define MAX_CACHE_ENTRIES 10
-
 typedef struct {
     PMEMobjpool *pool;
-    PMEMoid root;
-} Config;
+    TOID(struct Entries) root;
+} Persisted;
 
 typedef struct {
-    Config cfg;
+    Persisted persisted;
     int32_t allocatedSize;
     int32_t lastIdx;
-    CacheEntry* entries;
 } Cache;
 
 int8_t getEntry(const Cache* ptr, uint32_t index, CacheEntry* entry);
 uint32_t putEntry(Cache* ptr, const CacheEntry* entry);
 
-int8_t allocateEntries(Cache *ptr, size_t count, const char* pmem_file);
+int8_t allocateEntries(Cache *ptr, const char* pmem_file);
 int8_t freeEntries(const Cache* ptr);
 
 #endif //PMEM_MMAP_IO_CACHE_H
