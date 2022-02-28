@@ -26,8 +26,8 @@ typedef struct {
 
 typedef struct {
     Config cfg;
-    size_t allocatedSize;
-    size_t lastIdx;
+    int32_t allocatedSize;
+    int32_t lastIdx;
     CacheEntry* entries;
 } Cache;
 

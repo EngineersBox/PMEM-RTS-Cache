@@ -27,14 +27,14 @@ int main(int argc, char *argv[]) {
     };
     err = putEntry(&cache, &entry);
     if (err != 0) {
-        perror("Could insert entry");
+        perror("Could not insert entry");
         return 1;
     }
 
     CacheEntry storedEntry = {};
     err = getEntry(&cache, cache.lastIdx, &entry);
     if (err != 0) {
-        perror("Could get entry");
+        perror("Could not get entry");
         return 1;
     }
     printf("Timestamp: %ldl Value: %d", storedEntry.timestamp, storedEntry.value);
