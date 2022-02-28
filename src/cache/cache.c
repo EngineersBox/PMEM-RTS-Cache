@@ -43,7 +43,7 @@ int8_t getEntry(const Cache* ptr, uint32_t index, const CacheEntry* entry) {
         printf("Index out of range or allocated size\n");
         return -1;
     }
-    entry = D_RO(ptr->persisted.root)->entries[index];
+    entry = &D_RO(ptr->persisted.root)->entries[index];
     return 0;
 }
 
