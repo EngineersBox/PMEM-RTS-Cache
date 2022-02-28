@@ -64,6 +64,7 @@ uint32_t putEntry(Cache* ptr, const CacheEntry* entry) {
         return -1;
     }
     if (ptr->lastIdx >= ptr->allocatedSize - 1) {
+        printf("Index: %d, AllocatedSize: %d", ptr->lastIdx, ptr->allocatedSize);
         perror("Cache is full");
         return -1;
     }
@@ -73,7 +74,12 @@ uint32_t putEntry(Cache* ptr, const CacheEntry* entry) {
             0,
             sizeof(CacheEntry) * ptr->allocatedSize
         );
-        ptr->entries[ptr->lastIdx++] = *entry;
+        memcpy_s(
+            ptr->entries + ptr->lastIdx++,
+            sizeof(CacheEntry),
+            entry,
+            sizeof(CacheEntry)
+        );
     } TX_END
     return 0;
 }
