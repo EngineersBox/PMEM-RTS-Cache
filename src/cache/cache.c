@@ -56,8 +56,12 @@ uint32_t putEntry(Cache* ptr, const CacheEntry* entry) {
         printf("Cache is full\n");
         return -1;
     }
+    CacheEntry newEntry;
     TX_BEGIN(ptr->persisted.pool) {
-        D_RW(ptr->persisted.root)->entries[ptr->lastIdx++] = *entry;
+        newEntry = TX_NEW(CacheEntry);
+        CacheEntry newEntry = { .value = entry->value, .timestamp = entry->timestamp };
+    } TX_ONCOMMIT {
+        D_RW(ptr->persisted.root)->entries[ptr->lastIdx++] = newEntry;
     } TX_END
     return 0;
 }
