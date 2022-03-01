@@ -3,6 +3,10 @@
 #include <cstdlib>
 #include <algorithm>
 
+/*
+ * NOTE: THIS WILL NOT BE FINALISED IN CUDA, IT WILL BE IN OPENCL
+ */
+
 #include "common_sampling.h"
 
 extern "C" int superSample(color* data,

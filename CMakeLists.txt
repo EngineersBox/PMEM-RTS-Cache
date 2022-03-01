@@ -55,3 +55,7 @@ else()
     target_include_directories(rts_cache PRIVATE "./include")
 
 endif()
+
+# OpenCL
+find_package(OpenCL REQUIRED)
+target_link_libraries(main PRIVATE OpenCL::OpenCL)
