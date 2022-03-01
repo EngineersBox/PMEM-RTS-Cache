@@ -58,4 +58,4 @@ endif()
 
 # OpenCL
 find_package(OpenCL REQUIRED)
-target_link_libraries(main PRIVATE OpenCL::OpenCL)
+target_link_libraries(rts_cache PRIVATE OpenCL::OpenCL)
