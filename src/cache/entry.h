@@ -9,6 +9,7 @@
 
 POBJ_LAYOUT_BEGIN(entries_store);
 POBJ_LAYOUT_ROOT(entries_store, struct Entries);
+POBJ_LAYOUT_TOID(entries_store, CacheEntry);
 POBJ_LAYOUT_END(entries_store);
 
 typedef struct {
@@ -17,7 +18,7 @@ typedef struct {
 } CacheEntry;
 
 struct Entries {
-    CacheEntry entries[MAX_CACHE_ENTRIES];
+    TOID(CacheEntry) entries[MAX_CACHE_ENTRIES];
 };
 
 #endif //PMEM_MMAP_IO_ENTRY_H
