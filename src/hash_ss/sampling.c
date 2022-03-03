@@ -1,27 +1,12 @@
-#include <cuda.h>
 #include <iostream>
 #include <cstdlib>
 #include <algorithm>
 
-/*
- * NOTE: THIS WILL NOT BE FINALISED IN CUDA, IT WILL BE IN OPENCL
- */
-
-#include "common_sampling.h"
-
-extern "C" int superSample(color* data,
-                           unsigned int s_width, unsigned int s_height,
-                           unsigned int t_width, unsigned int t_height);
-
-__global__ void kernel(int* a, int* b, int* c, int n) {
-    int index = threadIdx.x + blockIdx.x * blockDim.x;
-    if (index < n)
-        c[index] = a[index] + b[index];
-}
-
+typedef unsigned char color;
+typedef struct Color Color;
 #define SUB_PIXEL_SIZE 4
 
-struct Color {
+typedef struct Color {
     float percent;
     color r, g, b;
     Color() : percent(0), r(0), g(0), b(0) {}
@@ -50,7 +35,7 @@ struct Color {
         b /= i;
         return *this;
     }
-};
+} Color;
 
 void process(color* data, unsigned int width, unsigned int height) {
     color* tempdata = (color*) std::malloc(sizeof(color) * width * height * 3);
@@ -81,13 +66,17 @@ void process(color* data, unsigned int width, unsigned int height) {
 }
 
 bool getColor(color* data, int index, unsigned int size, Color& c) {
-    if (index < 0 || (unsigned int) index >= size) return false;
+if (index < 0 || (unsigned int) index >= size) return false;
 
-    c.r = data[index*3 + 0];
-    c.g = data[index*3 + 1];
-    c.b = data[index*3 + 2];
-    return true;
+c.r = data[index*3 + 0];
+c.g = data[index*3 + 1];
+c.b = data[index*3 + 2];
+return true;
 }
+
+extern "C" int superSample(color* data,
+                           unsigned int s_width, unsigned int s_height,
+                           unsigned int t_width, unsigned int t_height);
 
 /* Block-Thread structure for super sampling
  * o - o ... o    Keys

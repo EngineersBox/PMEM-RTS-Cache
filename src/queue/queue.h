@@ -4,8 +4,11 @@
 #define RTS_CACHE_QUEUE_H
 
 #include <stdint.h>
+#include <libpmemobj.h>
 
-#include "../hash_ss/common_sampling.h"
+#ifndef QUEUE_TX_TYPE_OFFSET
+#define QUEUE_TX_TYPE_OFFSET 1004
+#endif
 
 typedef struct Node {
     struct Node* prev;
@@ -13,11 +16,15 @@ typedef struct Node {
     int32_t value;
 } Node;
 
+TOID_DECLARE(struct Node, QUEUE_TX_TYPE_OFFSET + 1)
+
 typedef struct Queue {
     unsigned count;
     Node* front;
     Node* back;
 } Queue;
+
+TOID_DECLARE(struct Queue, QUEUE_TX_TYPE_OFFSET);
 
 typedef struct HashKey {
     int capacity;
@@ -27,10 +34,5 @@ typedef struct HashKey {
 void dequeue(Queue* queue);
 void enqueue(Queue* queue, HashKey* key, int32_t value);
 void get(Queue* queue, HashKey* key);
-
-// Declared in src/hash_ss/sampling.cu
-extern int superSample(color* data,
-                       unsigned int s_width, unsigned int s_height,
-                       unsigned int t_width, unsigned int t_height);
 
 #endif //RTS_CACHE_QUEUE_H

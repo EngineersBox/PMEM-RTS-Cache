@@ -13,12 +13,12 @@ typedef struct CacheEntry {
 } CacheEntry;
 
 typedef struct Entries {
-    TOID(CacheEntry) entries[MAX_CACHE_ENTRIES];
+    TOID(struct CacheEntry) entries[];
 } Entries;
 
 POBJ_LAYOUT_BEGIN(entries_store);
 POBJ_LAYOUT_ROOT(entries_store, struct Entries);
-POBJ_LAYOUT_TOID(entries_store, struct CacheEntry);
+POBJ_LAYOUT_TOID(entries_store, CacheEntry);
 POBJ_LAYOUT_END(entries_store);
 
 #endif //PMEM_MMAP_IO_ENTRY_H

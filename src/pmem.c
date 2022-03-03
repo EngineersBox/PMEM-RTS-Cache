@@ -2,6 +2,7 @@
 #include <time.h>
 
 #include "cache/cache.h"
+#include "queue/queue.h"
 
 int64_t getMillis(void) {
     struct timespec now;
