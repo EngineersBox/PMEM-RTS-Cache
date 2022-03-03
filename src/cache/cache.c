@@ -59,7 +59,7 @@ uint32_t putEntry(Cache* ptr, const CacheEntry* entry) {
     CacheEntry newEntry;
     TX_BEGIN(ptr->persisted.pool) {
         newEntry = TX_NEW(CacheEntry);
-        CacheEntry newEntry = { .value = entry->value, .timestamp = entry->timestamp };
+        newEntry = *entry;
     } TX_ONCOMMIT {
         D_RW(ptr->persisted.root)->entries[ptr->lastIdx++] = newEntry;
     } TX_END
