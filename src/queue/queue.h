@@ -6,33 +6,37 @@
 #include <stdint.h>
 #include <libpmemobj.h>
 
-#ifndef QUEUE_TX_TYPE_OFFSET
-#define QUEUE_TX_TYPE_OFFSET 1004
-#endif
+POBJ_LAYOUT_BEGIN(queue);
+POBJ_LAYOUT_ROOT(queue, struct QueueRoot);
+POBJ_LAYOUT_TOID(queue, struct QueueEntry);
+POBJ_LAYOUT_TOID(queue, struct Queue);
+POBJ_LAYOUT_END(queue);
 
-typedef struct Node {
-    struct Node* prev;
-    struct Node* next;
-    int32_t value;
-} Node;
+struct QueueEntry {
+    int64_t value;
+};
 
-TOID_DECLARE(struct Node, QUEUE_TX_TYPE_OFFSET + 1)
+struct Queue {
+    size_t front;
+    size_t back;
+    size_t capacity;
+    TOID(struct QueueEntry) entries[];
+};
 
-typedef struct Queue {
-    unsigned count;
-    Node* front;
-    Node* back;
-} Queue;
+struct QueueRoot {
+    TOID(struct Queue) queue;
+};
 
-TOID_DECLARE(struct Queue, QUEUE_TX_TYPE_OFFSET);
+static int queue_constructor(PMEMobjpool* pop, void* ptr, void* arg);
+static int queue_new(PMEMobjpool* pop, TOID(struct Queue)* q, size_t size);
+static int queue_free(PMEMobjpool* pop, TOID(struct Queue)* q);
 
-typedef struct HashKey {
-    int capacity;
-    Node* array;
-} HashKey;
+static size_t queue_size(struct Queue *queue);
 
-void dequeue(Queue* queue);
-void enqueue(Queue* queue, HashKey* key, int32_t value);
-void get(Queue* queue, HashKey* key);
+static int queue_enqueue(PMEMobjpool* pop, struct Queue* queue, int64_t data);
+static int queue_dequeue(PMEMobjpool* pop, struct Queue* queue);
+
+static void queueGet(struct Queue* queue, size_t index);
+static void queueRemove(struct Queue* queue, size_t index);
 
 #endif //RTS_CACHE_QUEUE_H
