@@ -31,12 +31,12 @@ static int queue_constructor(PMEMobjpool* pop, void* ptr, void* arg);
 static int queue_new(PMEMobjpool* pop, TOID(struct Queue)* q, size_t size);
 static int queue_free(PMEMobjpool* pop, TOID(struct Queue)* q);
 
-static size_t queue_size(struct Queue *queue);
+static size_t queue_size(const struct Queue* queue);
 
 static int queue_enqueue(PMEMobjpool* pop, struct Queue* queue, int64_t data);
 static int queue_dequeue(PMEMobjpool* pop, struct Queue* queue);
 
-static void queueGet(struct Queue* queue, size_t index);
-static void queueRemove(struct Queue* queue, size_t index);
+static void queue_get(struct Queue* queue, size_t index);
+static void queue_remove(struct Queue* queue, size_t index);
 
 #endif //RTS_CACHE_QUEUE_H

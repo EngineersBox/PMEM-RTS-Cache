@@ -2,6 +2,7 @@
 /CMakeFiles
 /out
 /.idea
+/vms
 
 **/.DS_Store
 cmake_install.cmake
