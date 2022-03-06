@@ -36,7 +36,4 @@ static size_t queue_size(const struct Queue* queue);
 static int queue_enqueue(PMEMobjpool* pop, struct Queue* queue, int64_t data);
 static int queue_dequeue(PMEMobjpool* pop, struct Queue* queue);
 
-static void queue_get(struct Queue* queue, size_t index);
-static void queue_remove(struct Queue* queue, size_t index);
-
 #endif //RTS_CACHE_QUEUE_H
