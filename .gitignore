@@ -1,4 +1,7 @@
 /cmake-build-debug
+/cmake-build-debug-mingw
+/cmake-build-debug-gcc
+/cmake-build-debug-msvc
 /CMakeFiles
 /out
 /.idea
