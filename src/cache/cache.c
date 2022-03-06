@@ -21,7 +21,9 @@ int cache_new(PMEMobjpool* pop, TOID(struct Cache)* cache, int capacity) {
         pop,
         cache,
         struct Cache,
-        sizeof(struct Cache) + sizeof(TOID(struct hashmap_tx)),
+        sizeof(struct Cache) // Base struct
+        + sizeof(TOID(struct hashmap_tx)) // HashMap
+        + (sizeof(TOID(struct CacheEntry)) * 2), // Head+Tail pointers
         cache_constructor,
         &capacity
     );
