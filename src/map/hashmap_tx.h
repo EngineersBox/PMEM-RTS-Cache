@@ -14,6 +14,29 @@
 #endif
 
 struct hashmap_tx; TOID_DECLARE(struct hashmap_tx, HASHMAP_TX_TYPE_OFFSET + 0);
+/* layout definition */
+TOID_DECLARE(struct buckets, HASHMAP_TX_TYPE_OFFSET + 1);
+TOID_DECLARE(struct entry, HASHMAP_TX_TYPE_OFFSET + 2);
+
+struct entry {
+    uint64_t key;
+    PMEMoid value;
+    TOID(struct entry) next;
+};
+
+struct buckets {
+    size_t nbuckets;
+    TOID(struct entry) bucket[];
+};
+
+struct hashmap_tx {
+    uint32_t seed;
+    uint32_t hash_fun_a;
+    uint32_t hash_fun_b;
+    uint64_t hash_fun_p;
+    uint64_t count;
+    TOID(struct buckets) buckets;
+};
 
 int hm_tx_check(PMEMobjpool *pop, TOID(struct hashmap_tx) hashmap);
 int hm_tx_create(PMEMobjpool *pop, TOID(struct hashmap_tx) *map, void *arg);

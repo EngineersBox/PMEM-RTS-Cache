@@ -1,37 +1,38 @@
 #pragma once
 
-#ifndef PMEM_MMAP_IO_CACHE_H
-#define PMEM_MMAP_IO_CACHE_H
+#ifndef RTS_CACHE_CACHE_H
+#define RTS_CACHE_CACHE_H
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
-#ifndef _WIN32
-#include <unistd.h>
-#else
-#include <io.h>
-#endif
 #include <libpmemobj.h>
+#include "../map/hashmap_tx.h"
 
-#include "entry.h"
+POBJ_LAYOUT_BEGIN(cache_pobj);
+POBJ_LAYOUT_ROOT(cache_pobj, struct CacheRoot);
+POBJ_LAYOUT_TOID(cache_pobj, struct CacheEntry);
+POBJ_LAYOUT_TOID(cache_pobj, struct Cache);
+POBJ_LAYOUT_END(cache_pobj);
 
-typedef struct {
-    PMEMobjpool *pool;
-    TOID(struct Entries) root;
-} Persisted;
+typedef struct CacheEntry {
+    int _key;
+    int _value;
+    TOID(struct CacheEntry) prev;
+    TOID(struct CacheEntry) next;
+} CacheEntry;
 
-typedef struct {
-    Persisted persisted;
-    int32_t allocatedSize;
-    int32_t lastIdx;
+typedef struct Cache {
+    TOID(struct CacheEntry) head;
+    TOID(struct CacheEntry) tail;
+    size_t capacity;
+    TOID(struct hashmap_tx) hashmap;
 } Cache;
 
-int8_t getEntry(const Cache* ptr, uint32_t index, const CacheEntry* entry);
-uint32_t putEntry(Cache* ptr, const CacheEntry* entry);
+int cache_constructor(PMEMobjpool* pop, void* ptr, void* arg);
+int cache_new(PMEMobjpool* pop, TOID(struct Cache)* ptr, int capacity);
 
-int8_t allocateEntries(Cache *ptr, const char* pmem_file);
-int8_t freeEntries(const Cache* ptr);
+int cache_add(PMEMobjpool* pop, TOID(struct CacheEntry) tempEntry);
+int cache_delete(PMEMobjpool* pop, TOID(struct CacheEntry) tempEntry);
 
-#endif //PMEM_MMAP_IO_CACHE_H
+int cache_get(PMEMobjpool* pop, int key, int* value);
+int cacheSet(PMEMobjpool* pop, int key, int value);
+
+#endif //RTS_CACHE_CACHE_H
