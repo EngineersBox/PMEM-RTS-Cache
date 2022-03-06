@@ -2,8 +2,7 @@
 
 int cache_constructor(PMEMobjpool* pop, void* ptr, void* arg) {
     struct Cache* cache = ptr;
-    size_t* capacity = arg;
-    cache->capacity = *capacity;
+    cache->capacity = *((size_t*) arg);
 
     int ret = 0;
     TX_BEGIN(pop) {
