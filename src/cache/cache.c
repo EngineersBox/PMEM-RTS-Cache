@@ -31,4 +31,4 @@ int cache_add(PMEMobjpool* pop, TOID(struct CacheEntry) tempEntry);
 int cache_delete(PMEMobjpool* pop, TOID(struct CacheEntry) tempEntry);
 
 int cache_get(PMEMobjpool* pop, int key, int* value);
-int cacheSet(PMEMobjpool* pop, int key, int value);
+int cache_set(PMEMobjpool* pop, int key, int value);
