@@ -13,7 +13,7 @@ POBJ_LAYOUT_TOID(cache_pobj, struct Cache);
 POBJ_LAYOUT_END(cache_pobj);
 
 typedef struct CacheEntry {
-    int _key;
+    uint64_t _key;
     int _value;
     TOID(struct CacheEntry) prev;
     TOID(struct CacheEntry) next;
@@ -26,13 +26,14 @@ typedef struct Cache {
     TOID(struct hashmap_tx) hashmap;
 } Cache;
 
+typedef struct CacheRoot {
+    TOID(struct Cache) cache;
+} CacheRoot;
+
 int cache_constructor(PMEMobjpool* pop, void* ptr, void* arg);
 int cache_new(PMEMobjpool* pop, TOID(struct Cache)* ptr, int capacity);
 
-int cache_add(PMEMobjpool* pop, TOID(struct CacheEntry) tempEntry);
-int cache_delete(PMEMobjpool* pop, TOID(struct CacheEntry) tempEntry);
-
-int cache_get(PMEMobjpool* pop, int key, int* value);
-int cacheSet(PMEMobjpool* pop, int key, int value);
+int cache_get(PMEMobjpool* pop, TOID(struct Cache) cache, uint64_t key, int* value);
+int cache_set(PMEMobjpool* pop, TOID(struct Cache) cache, uint64_t key, int value);
 
 #endif //RTS_CACHE_CACHE_H
