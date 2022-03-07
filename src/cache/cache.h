@@ -6,11 +6,12 @@
 #include <libpmemobj.h>
 #include "../map/hashmap_tx.h"
 
-POBJ_LAYOUT_BEGIN(cache_pobj);
-POBJ_LAYOUT_ROOT(cache_pobj, struct CacheRoot);
-POBJ_LAYOUT_TOID(cache_pobj, struct CacheEntry);
-POBJ_LAYOUT_TOID(cache_pobj, struct Cache);
-POBJ_LAYOUT_END(cache_pobj);
+#ifndef CACHE_TX_TYPE_OFFSET
+#define CACHE_TX_TYPE_OFFSET 2004
+#endif
+
+TOID_DECLARE(struct Cache, CACHE_TX_TYPE_OFFSET);
+TOID_DECLARE(struct CacheEntry, CACHE_TX_TYPE_OFFSET + 1);
 
 typedef struct CacheEntry {
     uint64_t _key;
@@ -25,10 +26,6 @@ typedef struct Cache {
     size_t capacity;
     TOID(struct hashmap_tx) hashmap;
 } Cache;
-
-typedef struct CacheRoot {
-    TOID(struct Cache) cache;
-} CacheRoot;
 
 int cache_constructor(PMEMobjpool* pop, void* ptr, void* arg);
 int cache_new(PMEMobjpool* pop, TOID(struct Cache)* ptr, int capacity);
