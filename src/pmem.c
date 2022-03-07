@@ -74,5 +74,34 @@ int main(int argc, char* argv[]) {
         cache = D_RW(root)->cache;
     }
 
+    uint64_t key = 42;
+    int value = 1234;
+    int err = cache_set(pop, cache, key, value);
+    if (err != 0) {
+        fprintf(
+            stderr,
+            "Failed to set key %llu with value %d",
+            key,
+            value
+        );
+        return 1;
+    }
+
+    int retrievedValue;
+    err = cache_get(pop, cache, key, &retrievedValue);
+    if (err != 0) {
+        fprintf(
+            stderr,
+            "Failed to get key %llu",
+            key
+        );
+        return 1;
+    }
+    printf(
+        "Retrieved value for key %llu: %d",
+        key,
+        retrievedValue
+    );
+
     return 0;
 }

@@ -30,7 +30,7 @@ typedef struct Cache {
 int cache_constructor(PMEMobjpool* pop, void* ptr, void* arg);
 int cache_new(PMEMobjpool* pop, TOID(struct Cache)* ptr, int capacity);
 
-int cache_get(PMEMobjpool* pop, TOID(struct Cache) cache, uint64_t key, int* value);
+int cache_get(PMEMobjpool* pop, TOID(struct Cache) cache, uint64_t key, volatile int* value);
 int cache_set(PMEMobjpool* pop, TOID(struct Cache) cache, uint64_t key, int value);
 
 #endif //RTS_CACHE_CACHE_H

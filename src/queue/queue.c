@@ -18,7 +18,7 @@ static int queue_new(PMEMobjpool* pop, TOID(struct Queue)* q, size_t size) {
         pop,
         q,
         struct Queue,
-        sizeof(struct Queue) + sizeof(TOID(struct QueueEntry)) * size,
+        sizeof(struct Queue) + (sizeof(TOID(struct QueueEntry)) * size),
         queue_constructor,
         &size
     );
@@ -38,7 +38,7 @@ static int queue_enqueue(PMEMobjpool* pop, struct Queue* queue, int64_t data) {
         TX_ADD_DIRECT(&queue->back);
         queue->back++;
         TOID(struct QueueEntry) entry = TX_NEW(struct QueueEntry);
-        D_RW(entry)->value = data;
+            D_RW(entry)->value = data;
         TX_ADD_DIRECT(&queue->entries[pos]);
         queue->entries[pos] = entry;
     } TX_ONABORT {
