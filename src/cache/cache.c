@@ -1,19 +1,25 @@
 #include "cache.h"
+#include <stdio.h>
 
 int cache_new(PMEMobjpool* pop, TOID(struct Cache)* cache, int capacity) {
     int ret = 0;
     TX_BEGIN(pop) {
-        TX_ADD_DIRECT(cache);
+        TX_ADD(*cache);
         *cache = TX_NEW(struct Cache);
         D_RW(*cache)->capacity = capacity;
         TOID(struct hashmap_tx) hashmap;
-        struct hashmap_args args = {.seed = 0};
         int err;
-        if ((err = hm_tx_create(pop, &hashmap, &args)) == -1) {
+        if ((err = hm_tx_create(pop, &hashmap, NULL)) == -1) {
             pmemobj_tx_abort(err);
         }
         D_RW(*cache)->hashmap = hashmap;
     } TX_ONABORT {
+        fprintf(
+            stderr,
+            "%s: transaction aborted: %s\n",
+            __func__,
+            pmemobj_errormsg()
+        );
         ret = -1;
     } TX_END;
     return ret;
