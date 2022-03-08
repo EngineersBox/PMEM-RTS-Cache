@@ -8,7 +8,7 @@ int cache_constructor(PMEMobjpool* pop, void* ptr, void* arg) {
     TX_BEGIN(pop) {
         TOID(struct hashmap_tx) hashmap = TX_NEW(struct hashmap_tx);
         int err;
-        if ((err = hm_tx_init(pop, hashmap)) == -1) {
+        if ((err = hm_tx_create(pop, &hashmap, NULL)) == -1) {
             pmemobj_tx_abort(err);
         }
         cache->hashmap = hashmap;
@@ -27,7 +27,7 @@ int cache_new(PMEMobjpool* pop, TOID(struct Cache)* cache, int capacity) {
         struct Cache,
         sizeof(struct Cache) // Base struct
         + sizeof(TOID(struct hashmap_tx)) // HashMap
-            + (sizeof(TOID(struct CacheEntry)) * 2), // Head+Tail pointers
+        + (sizeof(TOID(struct CacheEntry)) * 2), // Head+Tail pointers
         cache_constructor,
         &capacity
     );
