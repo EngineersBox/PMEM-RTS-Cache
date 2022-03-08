@@ -19,7 +19,7 @@ static PMEMobjpool *pop;
 static TOID(struct CacheRoot) root;
 static TOID(struct Cache) cache;
 
-bool file_exists (char *filename) {
+bool file_exists(char *filename) {
     struct stat buffer;
     return stat(filename, &buffer) == 0;
 }
@@ -30,9 +30,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     char* path = argv[1];
-    PMEMobjpool *pop;
 
-    if (file_exists(path) != 0) {
+    if (file_exists(path) == false) {
         pop = pmemobj_create(
             path,
             POBJ_LAYOUT_NAME(cache_pobj),
