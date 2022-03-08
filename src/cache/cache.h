@@ -7,7 +7,7 @@
 #include "../map/hashmap_tx.h"
 
 #ifndef CACHE_TX_TYPE_OFFSET
-#define CACHE_TX_TYPE_OFFSET 2004
+#define CACHE_TX_TYPE_OFFSET 1004
 #endif
 
 TOID_DECLARE(struct Cache, CACHE_TX_TYPE_OFFSET);
