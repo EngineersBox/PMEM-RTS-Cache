@@ -80,7 +80,7 @@ int cache_delete(PMEMobjpool* pop, TOID(struct Cache) cache, TOID(struct CacheEn
 }
 
 int cache_get(PMEMobjpool* pop, TOID(struct Cache) cache, uint64_t key, volatile int* value) {
-    if (TOID_IS_NULL(cache) || hm_tx_check(pop, D_RO(cache)->hashmap)) {
+    if (TOID_IS_NULL(cache) || hm_tx_check(pop, D_RO(cache)->hashmap) || value == NULL) {
         return -1;
     }
 

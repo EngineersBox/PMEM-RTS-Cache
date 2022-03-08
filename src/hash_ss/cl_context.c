@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WIN32
+#ifdef __linux__
 #include <CL/cl.h>
 #else
 #include <OpenCL/cl.h>
