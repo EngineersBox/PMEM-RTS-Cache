@@ -4,7 +4,7 @@
 int cache_new(PMEMobjpool* pop, TOID(struct Cache)* cache, int capacity) {
     int ret = 0;
     TX_BEGIN(pop) {
-        TX_ADD(*cache);
+        TX_ADD_DIRECT(cache);
         *cache = TX_NEW(struct Cache);
         D_RW(*cache)->capacity = capacity;
         TOID(struct hashmap_tx) hashmap;

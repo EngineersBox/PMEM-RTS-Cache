@@ -6,6 +6,7 @@
 /out
 /.idea
 /vms
+/debug
 
 **/.DS_Store
 cmake_install.cmake
