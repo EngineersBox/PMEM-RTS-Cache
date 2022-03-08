@@ -9,13 +9,13 @@
 #ifndef _WIN32
 #define CREATE_MODE_RW (S_IWUSR | S_IRUSR)
 #include <unistd.h>
-static inline int file_exists(char const *file) {
-	return access(file, F_OK);
+static inline int file_exists(const char* path) {
+	return access(path, F_OK);
 }
 #else
 #define CREATE_MODE_RW (S_IWRITE | S_IREAD)
-static inline int file_exists(char const *file) {
-    return _access(file, 0);
+static inline int file_exists(const char* path) {
+    return _access(path, 0);
 }
 #endif
 
@@ -31,7 +31,7 @@ static PMEMobjpool *pop;
 static TOID(struct CacheRoot) root;
 static TOID(struct Cache) cache;
 
-int create_or_open_pool(char* path) {
+int create_or_open_pool(const char* path) {
     char* errorMsg;
     if (file_exists(path) != 0) {
         pop = pmemobj_create(
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
         printf("usage: %s <file-name>\n", argv[0]);
         return 1;
     }
-    char* path = argv[1];
+    const char* path = argv[1];
 
     int err;
     if ((err = create_or_open_pool(path)) != 0) {
