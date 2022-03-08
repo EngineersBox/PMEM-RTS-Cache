@@ -7,8 +7,9 @@ int cache_new(PMEMobjpool* pop, TOID(struct Cache)* cache, int capacity) {
         *cache = TX_NEW(struct Cache);
         D_RW(*cache)->capacity = capacity;
         TOID(struct hashmap_tx) hashmap;
+        struct hashmap_args args = {.seed = 0};
         int err;
-        if ((err = hm_tx_create(pop, &hashmap, NULL)) == -1) {
+        if ((err = hm_tx_create(pop, &hashmap, &args)) == -1) {
             pmemobj_tx_abort(err);
         }
         D_RW(*cache)->hashmap = hashmap;
@@ -32,10 +33,10 @@ int cache_add(PMEMobjpool* pop, TOID(struct Cache) cache, TOID(struct CacheEntry
 
         TOID(struct CacheEntry) dummy = TX_NEW(struct CacheEntry);
         TX_MEMCPY(D_RW(dummy), D_RO(D_RO(D_RO(cache)->head)->next), sizeof(struct CacheEntry));
-            D_RW(D_RW(cache)->head)->next = entry;
-            D_RW(entry)->prev = D_RO(cache)->head;
-            D_RW(entry)->next = dummy;
-            D_RW(dummy)->prev = entry;
+        D_RW(D_RW(cache)->head)->next = entry;
+        D_RW(entry)->prev = D_RO(cache)->head;
+        D_RW(entry)->next = dummy;
+        D_RW(dummy)->prev = entry;
     } TX_ONABORT {
         ret = -1;
     } TX_END;
@@ -55,8 +56,8 @@ int cache_delete(PMEMobjpool* pop, TOID(struct Cache) cache, TOID(struct CacheEn
 
         TOID(struct CacheEntry) delNext = D_RO(entry)->next;
         TOID(struct CacheEntry) delPrev = D_RO(entry)->prev;
-            D_RW(delNext)->prev = delPrev;
-            D_RW(delPrev)->next = delNext;
+        D_RW(delNext)->prev = delPrev;
+        D_RW(delPrev)->next = delNext;
         TX_FREE(entry);
     } TX_ONABORT {
         ret = -1;

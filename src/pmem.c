@@ -64,13 +64,13 @@ int main(int argc, char* argv[]) {
     }
 
     if (TOID_IS_NULL(cache)) {
-        int err = cache_new(pop, &D_RW(root)->cache, 5);
+        int err = cache_new(pop, &cache, 5);
         if (err != 0) {
             pmemobj_close(pop);
             perror("cache_new");
             return 1;
         }
-        cache = D_RW(root)->cache;
+            D_RW(root)->cache = cache;
     }
 
     uint64_t key = 42;
