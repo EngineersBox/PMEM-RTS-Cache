@@ -27,7 +27,6 @@ typedef struct Cache {
     TOID(struct hashmap_tx) hashmap;
 } Cache;
 
-int cache_constructor(PMEMobjpool* pop, void* ptr, void* arg);
 int cache_new(PMEMobjpool* pop, TOID(struct Cache)* ptr, int capacity);
 
 int cache_get(PMEMobjpool* pop, TOID(struct Cache) cache, uint64_t key, volatile int* value);

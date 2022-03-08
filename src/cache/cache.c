@@ -1,36 +1,21 @@
 #include "cache.h"
 
-int cache_constructor(PMEMobjpool* pop, void* ptr, void* arg) {
-    struct Cache* cache = ptr;
-    cache->capacity = *((size_t*) arg);
-
+int cache_new(PMEMobjpool* pop, TOID(struct Cache)* cache, int capacity) {
     int ret = 0;
     TX_BEGIN(pop) {
-        TOID(struct hashmap_tx) hashmap = TX_NEW(struct hashmap_tx);
+        TX_ADD_DIRECT(cache);
+        *cache = TX_NEW(struct Cache);
+        D_RW(*cache)->capacity = capacity;
+        TOID(struct hashmap_tx) hashmap;
         int err;
         if ((err = hm_tx_create(pop, &hashmap, NULL)) == -1) {
             pmemobj_tx_abort(err);
         }
-        cache->hashmap = hashmap;
+        D_RW(*cache)->hashmap = hashmap;
     } TX_ONABORT {
         ret = -1;
     } TX_END;
-
-    pmemobj_persist(pop, cache, sizeof(*cache));
     return ret;
-}
-
-int cache_new(PMEMobjpool* pop, TOID(struct Cache)* cache, int capacity) {
-    return POBJ_ALLOC(
-        pop,
-        cache,
-        struct Cache,
-        sizeof(struct Cache) // Base struct
-        + sizeof(TOID(struct hashmap_tx)) // HashMap
-        + (sizeof(TOID(struct CacheEntry)) * 2), // Head+Tail pointers
-        cache_constructor,
-        &capacity
-    );
 }
 
 /* INTERNAL ONLY */
