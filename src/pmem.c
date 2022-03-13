@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <inttypes.h>
 #include <libpmemobj.h>
 
