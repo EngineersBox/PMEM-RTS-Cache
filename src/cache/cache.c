@@ -4,6 +4,14 @@
 int cache_new(PMEMobjpool* pop, TOID(struct Cache)* cache, int capacity) {
     int ret = 0;
     TX_BEGIN(pop) {
+        /* For some reason, when we load an existing pool from PMEM
+         * and then load the existing cache from it, the object
+         * is outside of the mapped memory range of PMEM. Possibly
+         * because the memory range changes every time the program loads
+         * but it should be offset based not literal addresses. Either
+         * way, need to fix this because currently this deref of the
+         * persistent cache pointer causes this transaction to abort
+         */
         TX_ADD_DIRECT(cache);
         *cache = TX_NEW(struct Cache);
         D_RW(*cache)->capacity = capacity;
