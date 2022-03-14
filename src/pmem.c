@@ -4,6 +4,7 @@
 #include <libpmemobj.h>
 
 #include "cache/cache.h"
+#include "dual_domain/filter/cuckoo_filter.h"
 
 #ifndef _WIN32
 #define CREATE_MODE_RW (S_IWUSR | S_IRUSR)
