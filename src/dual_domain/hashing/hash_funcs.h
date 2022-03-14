@@ -69,4 +69,10 @@ uint32_t murmur_hash(uint32_t key, uint32_t seed) {
     return murmur_hash_internal(key, 32, seed);
 }
 
+uint32_t hash_fingerprint(const char* key, uint32_t key_len, uint32_t size, uint32_t n, uint32_t seed) {
+    uint32_t h1 = murmur_hash_internal(key, key_len, seed);
+    uint32_t h2 = murmur_hash_internal(key, key_len, h1);
+    return ((h1 + (n * h2)) % size);
+}
+
 #endif //RTS_CACHE_HASH_FUNCS_H
