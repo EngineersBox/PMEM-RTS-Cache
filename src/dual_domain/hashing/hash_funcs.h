@@ -5,6 +5,7 @@
 
 #include <inttypes.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "fnv.h"
 
@@ -15,8 +16,9 @@ static inline uint32_t murmur_32_scramble(uint32_t k) {
     return k;
 }
 
+
 // Based on implementation here: https://en.wikipedia.org/wiki/MurmurHash
-uint32_t murmur_hash(const char* key, size_t len, uint32_t seed) {
+uint32_t murmur_hash_internal(const uint8_t* key, size_t len, uint32_t seed) {
     uint32_t h = seed;
     uint32_t k;
     /* Read in groups of 4. */
@@ -47,6 +49,24 @@ uint32_t murmur_hash(const char* key, size_t len, uint32_t seed) {
     h *= 0xc2b2ae35;
     h ^= h >> 16;
     return h;
+}
+
+char* int2bin(uint32_t a, char *buffer, size_t buf_size) {
+    buffer += (buf_size - 1);
+
+    for (int i = 31; i >= 0; i--) {
+        *buffer-- = (a & 1) + '0';
+
+        a >>= 1;
+    }
+
+    return buffer;
+}
+
+uint32_t murmur_hash(uint32_t key, uint32_t seed) {
+    char buffer[32];
+    int2bin(key, buffer, 32);
+    return murmur_hash_internal(key, 32, seed);
 }
 
 #endif //RTS_CACHE_HASH_FUNCS_H

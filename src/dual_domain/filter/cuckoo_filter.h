@@ -6,7 +6,7 @@
 #include <inttypes.h>
 
 typedef struct CuckooItem {
-    uint32_t fingerprint;
+    uint8_t fingerprint;
     uint32_t h1_value;
     uint32_t h2_value;
     struct CuckooItem* next;
@@ -17,15 +17,17 @@ typedef struct CuckooItem {
 } __attribute__((packed)) CuckooItem;
 
 typedef struct CuckooFilter {
-    uint32_t bucket_count;
+    size_t bucket_count;
     CuckooItem* first;
     CuckooItem* last;
-    CuckooItem* entries_h1;
-    CuckooItem* entries_h2;
+    CuckooItem** entries_h1;
+    CuckooItem** entries_h2;
 } __attribute__((packed)) CuckooFilter;
 
-int cf_new(CuckooFilter* cf, uint32_t size);
-int cf_insert(CuckooFilter* cf, const char* value);
+int cf_new(CuckooFilter* cf, size_t size);
+int cf_free(CuckooFilter* cf);
+
+int cf_insert(CuckooFilter* cf, const char* value, size_t length);
 int cf_top_k_popsig(CuckooFilter* cf, int64_t* topk, size_t topk_size);
 
 #endif //RTS_CACHE_CUCKOO_FILTER_H
