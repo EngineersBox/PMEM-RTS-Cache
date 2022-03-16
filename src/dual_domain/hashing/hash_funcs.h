@@ -63,16 +63,17 @@ char* int2bin(uint32_t a, char *buffer, size_t buf_size) {
     return buffer;
 }
 
-uint32_t murmur_hash(uint32_t key, uint32_t seed) {
+uint32_t murmur_hash_fp(uint32_t hash, uint32_t seed) {
     char buffer[32];
-    int2bin(key, buffer, 32);
-    return murmur_hash_internal(key, 32, seed);
+    int2bin(hash, buffer, 32);
+    return murmur_hash_internal(hash, 32, seed);
 }
 
-uint32_t hash_fingerprint(const char* key, uint32_t key_len, uint32_t size, uint32_t n, uint32_t seed) {
-    uint32_t h1 = murmur_hash_internal(key, key_len, seed);
-    uint32_t h2 = murmur_hash_internal(key, key_len, h1);
-    return ((h1 + (n * h2)) % size);
+uint64_t hash_fp(uint64_t x) {
+    x = (x ^ (x >> 30)) * UINT64_C(0xbf58476d1ce4e5b9);
+    x = (x ^ (x >> 27)) * UINT64_C(0x94d049bb133111eb);
+    x = x ^ (x >> 31);
+    return x;
 }
 
 #endif //RTS_CACHE_HASH_FUNCS_H

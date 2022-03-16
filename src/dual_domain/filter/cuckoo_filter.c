@@ -1,23 +1,34 @@
 #include "cuckoo_filter.h"
 
-#include "../hashing/hash_funcs.h"
 #include <stdlib.h>
+#include "../../random/random.h"
+#include "util.h"
 
-int cf_new(CuckooFilter* cf, size_t size) {
-    if (cf == NULL) {
-        return -1;
-    }
+uint32_t next_pow_2(uint64_t n) {
+    n--;
+    n |= n >> 1;
+    n |= n >> 2;
+    n |= n >> 4;
+    n |= n >> 8;
+    n |= n >> 16;
+    n |= n >> 32;
+    n++;
+    return (uint32_t) n;
+}
+
+int cf_new(CuckooFilter* cf, uint32_t capacity) {
     cf = (CuckooFilter*) malloc(sizeof(CuckooFilter));
     if (cf == NULL) {
         return -1;
     }
-    cf->bucket_count = size;
-    cf->entries_h1 = (CuckooItem**) calloc(size, sizeof(CuckooItem));
-    if (cf->entries_h1 == NULL) {
-        return -1;
+    cf->count = 0;
+    capacity = next_pow_2((uint64_t) capacity) / BUCKET_SIZE;
+    if (capacity == 0) {
+        capacity = 1;
     }
-    cf->entries_h2 = (CuckooItem**) calloc(size, sizeof(CuckooItem));
-    if (cf->entries_h2 == NULL) {
+    cf->bucketPower = capacity;
+    cf->buckets = (Bucket**) calloc(capacity, sizeof(Bucket*));
+    if (cf->buckets == NULL) {
         return -1;
     }
     return 0;
@@ -27,48 +38,110 @@ int cf_free(CuckooFilter* cf) {
     if (cf == NULL) {
         return -1;
     }
-    if (cf->first == NULL && cf->last == NULL) {
-        return 0;
+    for (int i = 0; i < BUCKET_SIZE; i++) {
+        if (cf->buckets[i] != NULL && bucket_free(cf->buckets[i]) == -1) {
+            return -1;
+        }
     }
-    CuckooItem *item = cf->first;
-    while (item != NULL) {
-        CuckooItem* temp = item->next;
-        free(item);
-        item = temp;
-    }
-    if (cf->first == NULL && cf->last == NULL) {
-        return -1;
-    }
-    free(cf->entries_h1);
-    free(cf->entries_h2);
-    free(cf);
+    free(cf->buckets);
     return 0;
 }
 
-int cf_insert(CuckooFilter* cf, const char* value, size_t length) {
-    if (cf == NULL || cf->entries_h1 == NULL || cf->entries_h2) {
+int cf_is_init(CuckooFilter* cf) {
+    return cf != NULL && cf->buckets != NULL;
+}
+
+int cf_reset(CuckooFilter* cf) {
+    if (!cf_is_init(cf)) {
         return -1;
     }
-    uint32_t fingerprint = hash_fingerprint(
-        value,
-        length,
-        cf->bucket_count,
-        1000,
-        FNV1_32A_INIT
-    );
-    uint32_t hash1 = fnv_32a_buf(value, length, FNV1_32A_INIT);
-    uint32_t hash2 = hash1 ^ murmur_hash(fingerprint, FNV1_32A_INIT);
-
-    CuckooItem* item = (CuckooItem*) malloc(sizeof(CuckooItem));
-    item->fingerprint = fingerprint;
-    item->h1_value = hash1;
-    item->h2_value = hash2;
-    item->prev = cf->last->prev;
-
-    if (cf->entries_h1[hash1] == NULL) {
-        cf->entries_h1[hash1] = item;
-    } else if (cf->entries_h2[hash2] == NULL) {
-        cf->entries_h2[hash2] = item;
+    for (int i = 0; i < BUCKET_SIZE; i++) {
+        bucket_reset(cf->buckets[i]);
     }
-    // TODO: Swap entries for n potential iterations (max kickouts)
+    cf->count = 0;
+    return 0;
+}
+
+int cf_lookup(CuckooFilter* cf, const char* key, size_t len) {
+    if (!cf_is_init(cf)) {
+        return -1;
+    }
+    struct IndexFP ifp = index_and_fingerprint(key, len, cf->bucketPower);
+    if (bucket_fp_index(cf->buckets[ifp.indices], ifp.fp) > -1) {
+        return 1;
+    }
+    uint32_t index2 = alt_index(ifp.fp, ifp.indices, cf->bucketPower);
+    return bucket_fp_index(cf->buckets[index2], ifp.fp) > -1;
+}
+
+int cf_insert_internal(CuckooFilter* cf, Fingerprint fp, uint32_t idx) {
+    if (!cf_is_init(cf)) {
+        return 0;
+    } else if (cf->buckets[idx] != NULL && bucket_insert(cf->buckets[idx], fp)) {
+        cf->count++;
+        return 1;
+    }
+    return 0;
+}
+
+int cf_reinsert(CuckooFilter* cf, Fingerprint fp, uint32_t i) {
+    if (!cf_is_init(cf)) {
+        return 0;
+    }
+    for (int k = 0; k < MAX_BUCKET_KICK_OUT; k++) {
+        uint32_t j = (uint32_t) rand() % BUCKET_SIZE;
+        Fingerprint oldFp = fp;
+        fp = cf->buckets[i]->fp[j] = oldFp;
+        i = alt_index(fp, i, cf->bucketPower);
+        if (cf_insert_internal(cf, fp, i)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int cf_insert(CuckooFilter* cf, const char* key, size_t len) {
+    if (!cf_is_init(cf)) {
+        return -1;
+    }
+    struct IndexFP ifp = index_and_fingerprint(key, len, cf->bucketPower);
+    if (cf_insert_internal(cf, ifp.fp, ifp.indices)) {
+        return 0;
+    }
+    uint32_t index2 = alt_index(ifp.fp, ifp.indices, cf->bucketPower);
+    if (cf_insert_internal(cf, ifp.fp, index2)) {
+        return 0;
+    }
+    return cf_reinsert(cf, ifp.fp, rand_bool() ? ifp.indices : index2);
+}
+
+int cf_insert_unique(CuckooFilter* cf, const char* key, size_t len) {
+    if (cf_lookup(cf, key, len)) {
+        return 0;
+    }
+    return cf_insert(cf, key, len);
+}
+
+int cf_delete_internal(CuckooFilter* cf, Fingerprint fp, uint32_t i) {
+    if (!cf_is_init(cf)) {
+        return 0;
+    } else if (cf->buckets[i] != NULL && bucket_delete(cf->buckets[i], fp)) {
+        if (cf->count > 0) {
+            cf->count--;
+        }
+        return 1;
+    }
+    return 0;
+}
+
+int cf_delete(CuckooFilter* cf, const char* key, size_t len) {
+    if (!cf_is_init(cf)) {
+        return -1;
+    }
+    struct IndexFP ifp = index_and_fingerprint(key, len, cf->bucketPower);
+    if (cf_delete_internal(cf, ifp.fp, ifp.indices)) {
+        return 1;
+    }
+    uint32_t index2 = alt_index(ifp.fp, ifp.indices, cf->bucketPower);
+    return cf_delete_internal(cf, ifp.fp, index2);
 }
