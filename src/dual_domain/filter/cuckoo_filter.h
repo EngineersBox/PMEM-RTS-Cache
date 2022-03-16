@@ -6,7 +6,7 @@
 #include <inttypes.h>
 #include "bucket.h"
 
-#define MAX_BUCKET_KICK_OUT 10
+#define CF_MAX_BUCKET_KICK_OUT 10
 
 typedef struct CuckooFilter {
     size_t count;

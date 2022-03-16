@@ -36,7 +36,7 @@ int cf_new(CuckooFilter* cf, uint32_t capacity) {
 
 int cf_free(CuckooFilter* cf) {
     if (cf == NULL) {
-        return -1;
+        return 0;
     }
     for (int i = 0; i < BUCKET_SIZE; i++) {
         if (cf->buckets[i] != NULL && bucket_free(cf->buckets[i]) == -1) {
@@ -88,7 +88,7 @@ int cf_reinsert(CuckooFilter* cf, Fingerprint fp, uint32_t i) {
     if (!cf_is_init(cf)) {
         return 0;
     }
-    for (int k = 0; k < MAX_BUCKET_KICK_OUT; k++) {
+    for (int k = 0; k < CF_MAX_BUCKET_KICK_OUT; k++) {
         uint32_t j = (uint32_t) rand() % BUCKET_SIZE;
         Fingerprint oldFp = fp;
         fp = cf->buckets[i]->fp[j] = oldFp;
