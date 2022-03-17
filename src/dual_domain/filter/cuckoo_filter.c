@@ -1,6 +1,7 @@
 #include "cuckoo_filter.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "../../random/random.h"
 #include "util.h"
 
@@ -16,6 +17,17 @@ uint32_t next_pow_2(uint64_t n) {
     return (uint32_t) n;
 }
 
+int trailing_zeros(uint32_t num) {
+    int count = 0;
+    for (int i = 0; i < 32; i++) {
+        if((num >> i ) & 1) {
+            break;
+        }
+        count++;
+    }
+    return count;
+}
+
 int cf_new(CuckooFilter* cf, uint32_t capacity) {
     cf = (CuckooFilter*) malloc(sizeof(CuckooFilter));
     if (cf == NULL) {
@@ -26,8 +38,16 @@ int cf_new(CuckooFilter* cf, uint32_t capacity) {
     if (capacity == 0) {
         capacity = 1;
     }
-    cf->bucketPower = capacity;
+    cf->bucketPower = trailing_zeros(capacity);
     cf->buckets = (Bucket**) calloc(capacity, sizeof(Bucket*));
+    for (int i = 0; i < capacity; i++) {
+        if (bucket_new(cf->buckets[i]) == -1) {
+            fprintf(
+                stderr,
+                "Could not allocate buckets for cuckoo filter\n"
+            );
+        }
+    }
     if (cf->buckets == NULL) {
         return -1;
     }

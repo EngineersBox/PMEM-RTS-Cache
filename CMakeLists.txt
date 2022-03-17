@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 project(rts_cache C)
 
 set(CC gcc-9.3)
-set(C_STANDARD 17)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
