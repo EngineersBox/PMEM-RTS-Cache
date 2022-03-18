@@ -28,6 +28,10 @@ int trailing_zeros(uint32_t num) {
     return count;
 }
 
+Bucket* index_bucket(Bucket** buckets, uint32_t index) {
+    return (Bucket*) buckets + index;
+}
+
 int cf_new(CuckooFilter* cf, uint32_t capacity) {
     cf = (CuckooFilter*) malloc(sizeof(CuckooFilter));
     if (cf == NULL) {
@@ -59,7 +63,7 @@ int cf_free(CuckooFilter* cf) {
         return 0;
     }
     for (int i = 0; i < BUCKET_SIZE; i++) {
-        if (cf->buckets[i] != NULL && bucket_free(cf->buckets[i]) == -1) {
+        if (cf->buckets[i] != NULL && bucket_free(index_bucket(cf->buckets,i)) == -1) {
             return -1;
         }
     }
@@ -76,7 +80,7 @@ int cf_reset(CuckooFilter* cf) {
         return -1;
     }
     for (int i = 0; i < BUCKET_SIZE; i++) {
-        bucket_reset(cf->buckets[i]);
+        bucket_reset(index_bucket(cf->buckets,i));
     }
     cf->count = 0;
     return 0;
@@ -87,17 +91,17 @@ int cf_lookup(CuckooFilter* cf, const char* key, size_t len) {
         return -1;
     }
     struct IndexFP ifp = index_and_fingerprint(key, len, cf->bucketPower);
-    if (bucket_fp_index(cf->buckets[ifp.indices], ifp.fp) > -1) {
+    if (bucket_fp_index(index_bucket(cf->buckets,ifp.indices), ifp.fp) > -1) {
         return 1;
     }
     uint32_t index2 = alt_index(ifp.fp, ifp.indices, cf->bucketPower);
-    return bucket_fp_index(cf->buckets[index2], ifp.fp) > -1;
+    return bucket_fp_index(index_bucket(cf->buckets,index2), ifp.fp) > -1;
 }
 
 int cf_insert_internal(CuckooFilter* cf, Fingerprint fp, uint32_t idx) {
     if (!cf_is_init(cf)) {
         return 0;
-    } else if (cf->buckets[idx] != NULL && bucket_insert(cf->buckets[idx], fp)) {
+    } else if (cf->buckets[idx] != NULL && bucket_insert(index_bucket(cf->buckets, idx), fp)) {
         cf->count++;
         return 1;
     }
@@ -111,7 +115,7 @@ int cf_reinsert(CuckooFilter* cf, Fingerprint fp, uint32_t i) {
     for (int k = 0; k < CF_MAX_BUCKET_KICK_OUT; k++) {
         uint32_t j = (uint32_t) rand() % BUCKET_SIZE;
         Fingerprint oldFp = fp;
-        fp = cf->buckets[i]->fp[j] = oldFp;
+        fp = index_bucket(cf->buckets, i)->fp[j] = oldFp;
         i = alt_index(fp, i, cf->bucketPower);
         if (cf_insert_internal(cf, fp, i)) {
             return 1;
@@ -145,7 +149,7 @@ int cf_insert_unique(CuckooFilter* cf, const char* key, size_t len) {
 int cf_delete_internal(CuckooFilter* cf, Fingerprint fp, uint32_t i) {
     if (!cf_is_init(cf)) {
         return 0;
-    } else if (cf->buckets[i] != NULL && bucket_delete(cf->buckets[i], fp)) {
+    } else if (index_bucket(cf->buckets, i) != NULL && bucket_delete(index_bucket(cf->buckets, i), fp)) {
         if (cf->count > 0) {
             cf->count--;
         }
